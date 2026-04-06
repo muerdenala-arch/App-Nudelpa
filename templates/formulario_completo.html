@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F-GP-GP-005 CONTROL DE PRODUCCIÓN</title>
+    <style>
+        body { font-family: 'Arial Narrow', Arial, sans-serif; background-color: #ffffff; padding: 5px; margin: 0; color: #000; }
+        .hoja { max-width: 1250px; margin: auto; border: 2px solid #000; padding: 10px; overflow-x: auto; }
+
+        .fecha-box { width: 220px; float: right; border-collapse: collapse; margin-bottom: 5px; }
+        .fecha-box th, .fecha-box td { border: 1px solid #000; font-size: 10px; padding: 2px; text-align: center; }
+        .titulo-doc { text-align: center; font-size: 18px; margin: 10px 0; clear: both; text-decoration: underline; }
+
+        .seccion-header { background-color: #0033a0; color: #fff; font-size: 12px; padding: 3px; font-weight: bold; text-align: center; border: 1px solid #000; margin-top: 10px; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
+        th, td { border: 1px solid #000; padding: 3px; font-size: 10px; text-align: center; min-width: 40px; }
+        th { background-color: #f2f2f2; }
+
+        input, select { width: 95%; border: none; font-size: 11px; text-align: center; background: transparent; }
+        input:focus, select:focus { outline: 1px solid #e60000; background: #fff8f8; }
+
+        /* Campos inválidos */
+        input.invalido, select.invalido { outline: 2px solid #e60000; background: #fff0f0; }
+
+        .btn-agregar {
+            background-color: #28a745; color: white; border: none; border-radius: 50%;
+            width: 25px; height: 25px; font-size: 18px; font-weight: bold;
+            cursor: pointer; margin: 5px 2px; display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .btn-eliminar {
+            background-color: #dc3545; color: white; border: none; border-radius: 50%;
+            width: 25px; height: 25px; font-size: 18px; font-weight: bold;
+            cursor: pointer; margin: 5px 2px; display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); line-height: 1;
+        }
+        .btn-plus-header  { background-color: #0033a0; color: white; border: none; border-radius: 3px; padding: 1px 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-minus-header { background-color: #dc3545; color: white; border: none; border-radius: 3px; padding: 1px 6px; cursor: pointer; font-size: 12px; font-weight: bold; margin-left: 3px; }
+
+        .input-nuevo {
+            margin-top: 5px; display: none; width: 95%;
+            border: 1px solid #ccc; background: #fff;
+            text-align: center; font-size: 11px;
+        }
+        .input-nuevo:focus { outline: 1px solid #e60000; background: #fff8f8; border: 1px solid #e60000; }
+
+        /* Columna de eliminar fila */
+        .td-eliminar { border: none !important; background: transparent !important; width: 30px; padding: 0 2px; }
+
+        .footer-firmas { display: flex; justify-content: space-around; margin-top: 40px; margin-bottom: 60px; flex-wrap: wrap; gap: 20px; }
+        .firma-box { border-top: 1px solid #000; width: 200px; text-align: center; font-size: 10px; padding-top: 5px; font-weight: bold; }
+        .btn-flotante { position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 100; font-size: 14px; }
+        .btn-flotante:hover { background: #218838; }
+
+        /* Toast de validación */
+        #toast {
+            display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #e60000; color: #fff; padding: 12px 28px; border-radius: 8px;
+            font-weight: bold; font-size: 13px; z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast">⚠️ Por favor complete todos los campos obligatorios.</div>
+
+<!-- Se elimina el <form> con action ya que el backend no está implementado;
+     el guardado se maneja por JS con validación previa -->
+<div class="hoja" id="formulario">
+
+    <!-- ── CABECERA ── -->
+    <table class="fecha-box">
+        <tr><th rowspan="2">Ciudad</th><th colspan="3">Día / Mes / Año</th></tr>
+        <tr><th>Día</th><th>Mes</th><th>Año</th></tr>
+        <tr>
+            <td><input type="text" name="ciudad" value="Trinidad" required></td>
+            <td><input type="number" name="dia" placeholder="DD" min="1" max="31" required></td>
+            <td><input type="number" name="mes" placeholder="MM" min="1" max="12" required></td>
+            <td><input type="number" name="anio" placeholder="AAAA" min="2000" max="2100" required></td>
+        </tr>
+    </table>
+
+    <div class="titulo-doc">CONTROL DE PRODUCCIÓN</div>
+    <div style="text-align: right; font-size: 12px; font-weight: bold;">F-GP-GP-005</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Hora Inicial</th><th>Hora Final</th>
+                <th>Línea</th><th>Grupo</th><th>N°</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="time" name="h_ini_turno" required></td>
+                <td><input type="time" name="h_fin_turno" required></td>
+                <td><input type="text"  name="linea" required></td>
+                <td><input type="text"  name="grupo" required></td>
+                <td><input type="text"  name="num_reporte" required></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ── COLUMNAS PRINCIPALES ── -->
+    <div style="display: flex; gap: 5px;">
+        <div style="width: 60%;">
+
+            <!-- INFORMACIÓN DEL PRODUCTO -->
+            <div class="seccion-header">INFORMACIÓN DEL PRODUCTO EMBOTELLADO</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">Hora Producción</th>
+                        <th rowspan="2">Sabor</th><th rowspan="2">Formato</th>
+                        <th rowspan="2">BPM</th><th rowspan="2">Paquetes</th>
+                        <th rowspan="2">Neta</th><th rowspan="2" style="border:none; background:transparent;"></th>
+                    </tr>
+                    <tr><th>Ini</th><th>Fin</th></tr>
+                </thead>
+                <tbody id="tbodyProducto">
+                    <tr>
+                        <td><input type="time" name="p_h_ini[]" required></td>
+                        <td><input type="time" name="p_h_fin[]" required></td>
+                        <td><input type="text" name="p_sabor[]" required></td>
+                        <td><input type="text" name="p_formato[]" required></td>
+                        <td><input type="number" name="p_bpm[]" required></td>
+                        <td><input type="number" name="p_cajas[]" required></td>
+                        <td><input type="number" name="p_neta[]" required></td>
+                        <td class="td-eliminar"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn-agregar" onclick="agregarFila('tbodyProducto', filaProducto)">+</button>
+            <button type="button" class="btn-eliminar" onclick="eliminarUltimaFila('tbodyProducto')">−</button>
+
+            <!-- ENVASES PET/VIDRIO/LATA -->
+            <div class="seccion-header">REPORTE DE ENVASES PET-VIDRIO-LATA</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">Rechazo Llenas</th>
+                        <th rowspan="2">P. Calidad</th><th rowspan="2">Total</th>
+                        <th rowspan="2">Lote</th>
+                        <th colspan="2">Codificados</th>
+                        <th rowspan="2" style="border:none; background:transparent;"></th>
+                    </tr>
+                    <tr><th>Llenad.</th><th>Línea</th><th>Ini</th><th>Fin</th></tr>
+                </thead>
+                <tbody id="tbodyEnvases">
+                    <tr>
+                        <td><input type="text"   name="env_r_llenadora[]" required></td>
+                        <td><input type="text"   name="env_r_linea[]" required></td>
+                        <td><input type="number" name="env_p_calidad[]" required></td>
+                        <td><input type="number" name="env_t_rechazo[]" required></td>
+                        <td><input type="text"   name="env_lote_prod[]" required></td>
+                        <td><input type="text"   name="env_cod_ini[]" required></td>
+                        <td><input type="text"   name="env_cod_fin[]" required></td>
+                        <td class="td-eliminar"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn-agregar" onclick="agregarFila('tbodyEnvases', filaEnvases)">+</button>
+            <button type="button" class="btn-eliminar" onclick="eliminarUltimaFila('tbodyEnvases')">−</button>
+
+            <!-- ROTURAS Y DEVOLUCIÓN -->
+            <div class="seccion-header">REPORTE DE ROTURAS Y DEVOLUCIÓN (VIDRIO)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">Roturas Llenas</th>
+                        <th colspan="3">Roturas Vacías</th>
+                        <th rowspan="2">Dev. Exp.</th><th rowspan="2">Sucias</th>
+                        <th rowspan="2" style="border:none; background:transparent;"></th>
+                    </tr>
+                    <tr><th>Llen.</th><th>Lin.</th><th>Lav.</th><th>Mesa</th><th>Lin.</th></tr>
+                </thead>
+                <tbody id="tbodyRoturas">
+                    <tr>
+                        <td><input type="text"   name="rv_r_llenadora[]" required></td>
+                        <td><input type="text"   name="rv_r_linea[]" required></td>
+                        <td><input type="number" name="rv_v_lavadora[]" required></td>
+                        <td><input type="number" name="rv_v_mesa[]" required></td>
+                        <td><input type="text"   name="rv_v_linea[]" required></td>
+                        <td><input type="text"   name="rv_dev_expedicion[]" required></td>
+                        <td><input type="text"   name="rv_rech_sucias[]" required></td>
+                        <td class="td-eliminar"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn-agregar" onclick="agregarFila('tbodyRoturas', filaRoturas)">+</button>
+            <button type="button" class="btn-eliminar" onclick="eliminarUltimaFila('tbodyRoturas')">−</button>
+
+        </div><!-- /60% -->
+
+        <div style="width: 40%;">
+
+            <!-- JARABE TERMINADO -->
+            <div class="seccion-header">INFORMACIÓN CONSUMO DE JARABE TERMINADO</div>
+            <table>
+                <tbody>
+                    <tr><th>Sabor</th>      <td><input type="text" name="j_sabor" required></td></tr>
+                    <tr><th>Tanque</th>     <td><input type="text" name="j_tanque" required></td></tr>
+                    <tr><th>Lote</th>       <td><input type="text" name="j_lote" required></td></tr>
+                    <tr><th>Formato</th>    <td><input type="text" name="j_formato" required></td></tr>
+                    <tr><th>Inicio</th>     <td><input type="text" name="j_Inicio" required></td></tr>
+                    <tr><th>Final</th>      <td><input type="text" name="j_Final" required></td></tr>
+                    <tr><th>Cañería</th>    <td><input type="text" name="j_caneria" required></td></tr>
+                    <tr><th>T. Jarabe</th>  <td><input type="text" name="j_t_jarabe" required></td></tr>
+                    <tr><th>T. Mezcla</th>  <td><input type="text" name="j_t_mezcla" required></td></tr>
+                    <tr><th>T. Saturador</th><td><input type="text" name="j_t_saturador" required></td></tr>
+                    <tr><th>T. Llenadora</th><td><input type="text" name="j_t_llenadora" required></td></tr>
+                </tbody>
+            </table>
+
+            <!-- NITRÓGENO -->
+            <div class="seccion-header">CONSUMO DE NITRÓGENO</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">Tanque</th>
+                        <th colspan="2">Presión</th>
+                        <th colspan="2">Peso (Kg)</th>
+                        <th rowspan="2">Total Peso (Kg)</th>
+                        <th rowspan="2" style="border:none; background:transparent;"></th>
+                    </tr>
+                    <tr><th>Inicial</th><th>Final</th><th>Inicial</th><th>Final</th></tr>
+                </thead>
+                <tbody id="tbodyGas">
+                    <tr>
+                        <td><input type="text"   name="g_tanque[]" value="Tanque 1" required></td>
+                        <td><input type="number" name="g_p_ini[]" required></td>
+                        <td><input type="number" name="g_p_fin[]" required></td>
+                        <td><input type="number" name="g_w_ini[]" required></td>
+                        <td><input type="number" name="g_w_fin[]" required></td>
+                        <td><input type="number" name="g_w_total[]" required></td>
+                        <td class="td-eliminar"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn-agregar" onclick="agregarFilaGas()">+</button>
+            <button type="button" class="btn-eliminar" onclick="eliminarUltimaFila('tbodyGas')">−</button>
+
+        </div><!-- /40% -->
+    </div><!-- /flex -->
+
+    <!-- FALLAS -->
+    <div class="seccion-header">PARADAS POR FALLAS DE LAS MÁQUINAS</div>
+    <table id="tablaFallas">
+        <thead>
+            <tr id="headerFallas1">
+                <th rowspan="2">N°</th>
+                <th rowspan="2">Máquina</th>
+                <th rowspan="2">Parte</th>
+                <th rowspan="2">Descripción</th>
+                <th id="thFrec_Fallas" colspan="2">Frecuencia 1</th>
+                <th id="btnColFallas" rowspan="2" style="background:white; border:none; width:70px;">
+                    <button type="button" class="btn-plus-header"  onclick="agregarColumna('Fallas')">+</button>
+                    <button type="button" class="btn-minus-header" onclick="quitarColumna('Fallas')">−</button>
+                </th>
+                <th rowspan="2" style="border:none; background:transparent;"></th>
+            </tr>
+            <tr id="headerFallas2"><th>Inicio</th><th>Fin</th></tr>
+        </thead>
+        <tbody id="tbodyFallas">
+            <tr>
+                <td>1</td>
+                <td><input type="text" name="f_maq[]" required></td>
+                <td><input type="text" name="f_par[]" required></td>
+                <td><input type="text" name="f_des[]" required></td>
+                <td><input type="time" name="f_ini[]" required></td>
+                <td><input type="time" name="f_fin[]" required></td>
+                <td class="td-eliminar"></td>
+            </tr>
+        </tbody>
+    </table>
+    <button type="button" class="btn-agregar" onclick="agregarFilaFallas()">+</button>
+    <button type="button" class="btn-eliminar" onclick="eliminarUltimaFila('tbodyFallas')">−</button>
+
+    <!-- RUTINARIAS -->
+    <div class="seccion-header">PARADAS RUTINARIAS Y AJENAS A PRODUCCIÓN</div>
+    <table id="tablaRutinarias">
+        <thead>
+            <tr id="headerRutinarias1">
+                <th rowspan="2">#</th>
+                <th rowspan="2">Categoría</th>
+                <th rowspan="2">Detalle</th>
+                <th id="thFrec_Rutinarias" colspan="2">Frecuencia 1</th>
+                <th id="btnColRutinarias" rowspan="2" style="background:white; border:none; width:70px;">
+                    <button type="button" class="btn-plus-header"  onclick="agregarColumna('Rutinarias')">+</button>
+                    <button type="button" class="btn-minus-header" onclick="quitarColumna('Rutinarias')">−</button>
+                </th>
+                <th rowspan="2" style="border:none; background:transparent;"></th>
+            </tr>
+            <tr id="headerRutinarias2"><th>Inicio</th><th>Fin</th></tr>
+        </thead>
+        <tbody id="tbodyRutinarias">
+            <tr>
+                <td>1</td>
+                <td>
+                    <select name="r_categoria[]" onchange="actualizarOpciones(this)" required>
+                        <option value="">-- Tipo --</option>
+                        <option value="programada">Paradas Programadas</option>
+                        <option value="rutinaria">Paradas Rutinarias</option>
+                        <option value="ajena">Paradas Ajenas</option>
+                    </select>
+                </td>
+                <td>
+                    <select name="r_detalle[]" onchange="verificarOtro(this)" required>
+                        <option value="">-- Detalle --</option>
+                    </select>
+                    <input type="text" name="r_detalle_nuevo[]" class="input-nuevo" placeholder="Escriba...">
+                </td>
+                <td><input type="time" name="r_ini[]" required></td>
+                <td><input type="time" name="r_fin[]" required></td>
+                <td class="td-eliminar"></td>
+            </tr>
+        </tbody>
+    </table>
+    <button type="button" class="btn-agregar" onclick="agregarFilaRutinarias()">+</button>
+    <button type="button" class="btn-eliminar" onclick="eliminarUltimaFila('tbodyRutinarias')">−</button>
+
+    <!-- OBSERVACIONES -->
+    <div style="font-weight:bold; margin-top:10px;">Observaciones Finales.-</div>
+    <textarea name="obs_finales" style="width:100%; border:1px solid #000; height:50px;" required></textarea>
+
+    <!-- FIRMAS -->
+    <div class="footer-firmas">
+        <div class="firma-box">Supervisor de Producción</div>
+        <div class="firma-box">Supervisor de Control Calidad</div>
+        <div class="firma-box">Sub Gerente de Producción</div>
+        <div class="firma-box">Turno de Mantenimiento</div>
+    </div>
+
+</div><!-- /hoja -->
+
+<button type="button" class="btn-flotante" onclick="guardarReporte()">GUARDAR REPORTE</button>
+
+<script>
+    /* ══════════════════════════════════════════
+       CONTADORES DE COLUMNAS DINÁMICAS
+    ══════════════════════════════════════════ */
+    let nFallas = 1, nRutinarias = 1;
+
+    /* ══════════════════════════════════════════
+       PLANTILLAS DE FILAS
+    ══════════════════════════════════════════ */
+    function filaProducto() {
+        return `<tr>
+            <td><input type="time"   name="p_h_ini[]"   required></td>
+            <td><input type="time"   name="p_h_fin[]"   required></td>
+            <td><input type="text"   name="p_sabor[]"   required></td>
+            <td><input type="text"   name="p_formato[]" required></td>
+            <td><input type="number" name="p_bpm[]"     required></td>
+            <td><input type="number" name="p_cajas[]"   required></td>
+            <td><input type="number" name="p_neta[]"    required></td>
+            <td class="td-eliminar"></td>
+        </tr>`;
+    }
+
+    function filaEnvases() {
+        return `<tr>
+            <td><input type="text"   name="env_r_llenadora[]" required></td>
+            <td><input type="text"   name="env_r_linea[]"     required></td>
+            <td><input type="number" name="env_p_calidad[]"   required></td>
+            <td><input type="number" name="env_t_rechazo[]"   required></td>
+            <td><input type="text"   name="env_lote_prod[]"   required></td>
+            <td><input type="text"   name="env_cod_ini[]"     required></td>
+            <td><input type="text"   name="env_cod_fin[]"     required></td>
+            <td class="td-eliminar"></td>
+        </tr>`;
+    }
+
+    function filaRoturas() {
+        return `<tr>
+            <td><input type="text"   name="rv_r_llenadora[]"  required></td>
+            <td><input type="text"   name="rv_r_linea[]"      required></td>
+            <td><input type="number" name="rv_v_lavadora[]"   required></td>
+            <td><input type="number" name="rv_v_mesa[]"       required></td>
+            <td><input type="text"   name="rv_v_linea[]"      required></td>
+            <td><input type="text"   name="rv_dev_expedicion[]" required></td>
+            <td><input type="text"   name="rv_rech_sucias[]"  required></td>
+            <td class="td-eliminar"></td>
+        </tr>`;
+    }
+
+    /* ══════════════════════════════════════════
+       AGREGAR / ELIMINAR FILAS GENÉRICAS
+    ══════════════════════════════════════════ */
+    function agregarFila(tbodyId, plantillaFn) {
+        document.getElementById(tbodyId).insertAdjacentHTML('beforeend', plantillaFn());
+    }
+
+    function eliminarUltimaFila(tbodyId) {
+        const tbody = document.getElementById(tbodyId);
+        if (tbody.rows.length > 1) {
+            tbody.deleteRow(tbody.rows.length - 1);
+            // Re-numerar si aplica
+            renumerar(tbodyId);
+        }
+    }
+
+    function renumerar(tbodyId) {
+        const filas = document.getElementById(tbodyId).rows;
+        for (let i = 0; i < filas.length; i++) {
+            const primera = filas[i].cells[0];
+            if (primera && /^\d+$/.test(primera.innerText.trim())) {
+                primera.innerText = i + 1;
+            }
+        }
+    }
+
+    /* ══════════════════════════════════════════
+       GAS
+    ══════════════════════════════════════════ */
+    function agregarFilaGas() {
+        const tbody = document.getElementById('tbodyGas');
+        const n = tbody.rows.length + 1;
+        tbody.insertAdjacentHTML('beforeend', `<tr>
+            <td><input type="text"   name="g_tanque[]"  value="Tanque ${n}" required></td>
+            <td><input type="number" name="g_p_ini[]"   required></td>
+            <td><input type="number" name="g_p_fin[]"   required></td>
+            <td><input type="number" name="g_w_ini[]"   required></td>
+            <td><input type="number" name="g_w_fin[]"   required></td>
+            <td><input type="number" name="g_w_total[]" required></td>
+            <td class="td-eliminar"></td>
+        </tr>`);
+    }
+
+    /* ══════════════════════════════════════════
+       FALLAS
+    ══════════════════════════════════════════ */
+    function agregarFilaFallas() {
+        const tbody = document.getElementById('tbodyFallas');
+        let celdas = '';
+        for (let i = 0; i < nFallas; i++)
+            celdas += `<td><input type="time" name="f_ini[]" required></td><td><input type="time" name="f_fin[]" required></td>`;
+        tbody.insertAdjacentHTML('beforeend', `<tr>
+            <td>${tbody.rows.length + 1}</td>
+            <td><input type="text" name="f_maq[]" required></td>
+            <td><input type="text" name="f_par[]" required></td>
+            <td><input type="text" name="f_des[]" required></td>
+            ${celdas}
+            <td class="td-eliminar"></td>
+        </tr>`);
+    }
+
+    /* ══════════════════════════════════════════
+       RUTINARIAS
+    ══════════════════════════════════════════ */
+    function agregarFilaRutinarias() {
+        const tbody = document.getElementById('tbodyRutinarias');
+        let celdas = '';
+        for (let i = 0; i < nRutinarias; i++)
+            celdas += `<td><input type="time" name="r_ini[]" required></td><td><input type="time" name="r_fin[]" required></td>`;
+        tbody.insertAdjacentHTML('beforeend', `<tr>
+            <td>${tbody.rows.length + 1}</td>
+            <td>
+                <select name="r_categoria[]" onchange="actualizarOpciones(this)" required>
+                    <option value="">-- Tipo --</option>
+                    <option value="programada">Paradas Programadas</option>
+                    <option value="rutinaria">Paradas Rutinarias</option>
+                    <option value="ajena">Paradas Ajenas</option>
+                </select>
+            </td>
+            <td>
+                <select name="r_detalle[]" onchange="verificarOtro(this)" required>
+                    <option value="">-- Detalle --</option>
+                </select>
+                <input type="text" name="r_detalle_nuevo[]" class="input-nuevo" placeholder="Escriba...">
+            </td>
+            ${celdas}
+            <td class="td-eliminar"></td>
+        </tr>`);
+    }
+
+    /* ══════════════════════════════════════════
+       COLUMNAS DINÁMICAS (Fallas / Rutinarias)
+    ══════════════════════════════════════════ */
+    function agregarColumna(tipo) {
+        let h1, h2, btn, tbody, nameIni, nameFin, count;
+        if (tipo === 'Fallas') {
+            nFallas++; count = nFallas;
+            h1='headerFallas1'; h2='headerFallas2'; btn='btnColFallas';
+            tbody='tbodyFallas'; nameIni='f_ini[]'; nameFin='f_fin[]';
+        } else {
+            nRutinarias++; count = nRutinarias;
+            h1='headerRutinarias1'; h2='headerRutinarias2'; btn='btnColRutinarias';
+            tbody='tbodyRutinarias'; nameIni='r_ini[]'; nameFin='r_fin[]';
+        }
+
+        const head1    = document.getElementById(h1);
+        const btnHeader = document.getElementById(btn);
+        const nuevoTh  = document.createElement('th');
+        nuevoTh.colSpan = 2;
+        nuevoTh.innerText = 'Frecuencia ' + count;
+        head1.insertBefore(nuevoTh, btnHeader);
+
+        document.getElementById(h2).insertAdjacentHTML('beforeend', '<th>Inicio</th><th>Fin</th>');
+
+        const filas = document.getElementById(tbody).rows;
+        for (let i = 0; i < filas.length; i++) {
+            // Insertar antes de la última celda (td-eliminar)
+            const lastTd = filas[i].lastElementChild;
+            const fragIni = document.createElement('td');
+            fragIni.innerHTML = `<input type="time" name="${nameIni}" required>`;
+            const fragFin = document.createElement('td');
+            fragFin.innerHTML = `<input type="time" name="${nameFin}" required>`;
+            filas[i].insertBefore(fragIni, lastTd);
+            filas[i].insertBefore(fragFin, lastTd);
+        }
+    }
+
+    function quitarColumna(tipo) {
+        let h1, h2, tbody, count;
+        if (tipo === 'Fallas') {
+            if (nFallas <= 1) return;          // mínimo 1 frecuencia
+            h1='headerFallas1'; h2='headerFallas2'; tbody='tbodyFallas'; count=nFallas; nFallas--;
+        } else {
+            if (nRutinarias <= 1) return;
+            h1='headerRutinarias1'; h2='headerRutinarias2'; tbody='tbodyRutinarias'; count=nRutinarias; nRutinarias--;
+        }
+
+        // Quitar el <th colspan=2> de frecuencia N en header fila 1
+        const head1 = document.getElementById(h1);
+        const ths = head1.querySelectorAll('th[colspan="2"]');
+        // El último th[colspan=2] que NO sea el botón es la última frecuencia
+        const ultimoFrec = Array.from(ths).filter(th => th.innerText.startsWith('Frecuencia')).pop();
+        if (ultimoFrec) ultimoFrec.remove();
+
+        // Quitar los dos últimos <th> de la fila 2 (Inicio / Fin)
+        const head2 = document.getElementById(h2);
+        const ths2 = head2.querySelectorAll('th');
+        if (ths2.length >= 2) { ths2[ths2.length-1].remove(); ths2[ths2.length-2].remove(); }
+
+        // Quitar las dos últimas celdas de tiempo en cada fila del tbody (antes de td-eliminar)
+        const filas = document.getElementById(tbody).rows;
+        for (let i = 0; i < filas.length; i++) {
+            const cells = filas[i].cells;
+            const last = cells[cells.length - 1]; // td-eliminar
+            // eliminar las 2 celdas justo antes de td-eliminar
+            if (cells.length >= 3) {
+                filas[i].removeChild(cells[cells.length - 2]);
+                filas[i].removeChild(cells[cells.length - 2]); // índice se recorre
+            }
+        }
+    }
+
+    /* ══════════════════════════════════════════
+       SELECTS ENCADENADOS
+    ══════════════════════════════════════════ */
+    const opciones = {
+        programada: ["Charla / Reuniones / Capacitación","Sanitizado / Limpieza (semanal)","Mantenimiento programado","AGREGAR NUEVA"],
+        rutinaria:  ["Almuerzo / Cena / Otros","Cambio de sabor / Formato","Preparación de línea","Espumeo / Limpieza final","AGREGAR NUEVA"],
+        ajena:      ["Falta insumos","Corte energía eléctrica","Pruebas / Ajustes externos","AGREGAR NUEVA"]
+    };
+
+    function actualizarOpciones(selectCat) {
+        const fila = selectCat.closest('tr');
+        const selectDetalle = fila.querySelector('select[name="r_detalle[]"]');
+        const inputNuevo    = fila.querySelector('.input-nuevo');
+        selectDetalle.style.display = 'block';
+        selectDetalle.innerHTML = '<option value="">-- Detalle --</option>';
+        inputNuevo.style.display = 'none';
+        inputNuevo.required = false;
+        selectDetalle.required = true;
+        if (opciones[selectCat.value]) {
+            opciones[selectCat.value].forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt; o.textContent = opt;
+                selectDetalle.appendChild(o);
+            });
+        }
+    }
+
+    function verificarOtro(selectDet) {
+        const fila       = selectDet.closest('tr');
+        const inputNuevo = fila.querySelector('.input-nuevo');
+        if (selectDet.value === "AGREGAR NUEVA") {
+            selectDet.style.display = 'none';
+            selectDet.required = false;
+            inputNuevo.style.display = 'block';
+            inputNuevo.required = true;
+            inputNuevo.focus();
+        } else {
+            inputNuevo.style.display = 'none';
+            inputNuevo.required = false;
+            selectDet.required = true;
+        }
+    }
+
+    /* ══════════════════════════════════════════
+       VALIDACIÓN Y GUARDADO
+    ══════════════════════════════════════════ */
+    function guardarReporte() {
+        // Limpiar marcas previas
+        document.querySelectorAll('.invalido').forEach(el => el.classList.remove('invalido'));
+
+        const campos = document.querySelectorAll(
+            '#formulario input[required], #formulario select[required], #formulario textarea[required]'
+        );
+
+        let hayError = false;
+        campos.forEach(campo => {
+            // Ignorar campos ocultos (input-nuevo no visible)
+            if (campo.offsetParent === null) return;
+            const val = campo.value.trim();
+            if (!val) {
+                campo.classList.add('invalido');
+                hayError = true;
+            }
+        });
+
+        if (hayError) {
+            mostrarToast('⚠️ Por favor complete todos los campos obligatorios.');
+            // Hacer scroll al primer campo inválido
+            const primero = document.querySelector('.invalido');
+            if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        // ── Aquí iría el envío real al backend ──
+        // Ejemplo: fetch('/guardar_todo', { method:'POST', body: new FormData(...) })
+        mostrarToast('✅ Reporte listo para enviar. Conecte el backend en guardarReporte().');
+    }
+
+    function mostrarToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.background = msg.startsWith('✅') ? '#28a745' : '#e60000';
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 4000);
+    }
+
+    /* Limpiar marca roja al corregir el campo */
+    document.addEventListener('input', e => {
+        if (e.target.classList.contains('invalido') && e.target.value.trim())
+            e.target.classList.remove('invalido');
+    });
+    document.addEventListener('change', e => {
+        if (e.target.classList.contains('invalido') && e.target.value.trim())
+            e.target.classList.remove('invalido');
+    });
+</script>
+</body>
+</html>
