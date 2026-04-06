@@ -65,10 +65,13 @@
 <div id="toast">⚠️ Por favor complete todos los campos obligatorios.</div>
 
 <div class="hoja" id="formulario">
+    <!-- 🔴 LOGO AGREGADO -->
+    <img src="{{ url_for('static', filename='logo nudelpa.png') }}" 
+     style="position: absolute; top: 15px; left: 15px; width: 120px;">
 
     <!-- ── CABECERA ── -->
     <table class="fecha-box">
-        <tr><th rowspan="2">Ciudad</th><th colspan="3">Día / Mes / Año</th></tr>
+        <tr><th rowspan="2">Ciudad</th>
         <tr><th>Día</th><th>Mes</th><th>Año</th></tr>
         <tr>
             <td><input type="text" name="ciudad" value="Trinidad" required></td>
@@ -77,6 +80,7 @@
             <td><input type="number" name="anio" placeholder="AAAA" min="2000" max="2100" required></td>
         </tr>
     </table>
+
 
     <div class="titulo-doc">CONTROL DE PRODUCCIÓN</div>
     <div style="text-align: right; font-size: 12px; font-weight: bold;">F-GP-GP-005</div>
@@ -208,17 +212,17 @@
             <div class="seccion-header">INFORMACIÓN CONSUMO DE JARABE TERMINADO</div>
             <table>
                 <tbody>
-                    <tr><th>Sabor</th>      <td><input type="text" name="j_sabor" required></td></tr>
-                    <tr><th>Tanque</th>     <td><input type="text" name="j_tanque" required></td></tr>
-                    <tr><th>Lote</th>       <td><input type="text" name="j_lote" required></td></tr>
-                    <tr><th>Formato</th>    <td><input type="text" name="j_formato" required></td></tr>
-                    <tr><th>Inicio</th>     <td><input type="text" name="j_Inicio" required></td></tr>
-                    <tr><th>Final</th>      <td><input type="text" name="j_Final" required></td></tr>
-                    <tr><th>Cañería</th>    <td><input type="text" name="j_caneria" required></td></tr>
-                    <tr><th>T. Jarabe</th>  <td><input type="text" name="j_t_jarabe" required></td></tr>
-                    <tr><th>T. Mezcla</th>  <td><input type="text" name="j_t_mezcla" required></td></tr>
-                    <tr><th>T. Saturador</th><td><input type="text" name="j_t_saturador" required></td></tr>
-                    <tr><th>T. Llenadora</th><td><input type="text" name="j_t_llenadora" required></td></tr>
+                    <tr><th>Sabor</th>      <td><input type="text" name="j_sabor" required></td></tr><input type="text" name="j_sabor" required></td></tr>
+                    <tr><th>Tanque</th>     <td><input type="text" name="j_tanque" required></td></tr><input type="text" name="j_tanque" required></td></tr>
+                    <tr><th>Lote</th>       <td><input type="text" name="j_lote" required></td></tr><input type="text" name="j_lote" required></td></tr>
+                    <tr><th>Formato</th>    <td><input type="text" name="j_formato" required></td></tr><input type="text" name="j_formato" required></td></tr>
+                    <tr><th>Inicio</th>     <td><input type="text" name="j_Inicio" required></td></tr><input type="text" name="j_Inicio" required></td></tr>
+                    <tr><th>Final</th>      <td><input type="text" name="j_Final" required></td></tr><input type="text" name="j_Final" required></td></tr>
+                    <tr><th>Cañería</th>    <td><input type="text" name="j_caneria" required></td></tr><input type="text" name="j_caneria" required></td></tr>
+                    <tr><th>T. Jarabe</th>  <td><input type="text" name="j_t_jarabe" required></td></tr><input type="text" name="j_t_jarabe" required></td></tr>
+                    <tr><th>T. Mezcla</th>  <td><input type="text" name="j_t_mezcla" required></td></tr><input type="text" name="j_t_mezcla" required></td></tr>
+                    <tr><th>T. Saturador</th><td><input type="text" name="j_t_saturador" required></td></tr><input type="text" name="j_t_saturador" required></td></tr>
+                    <tr><th>T. Llenadora</th><td><input type="text" name="j_t_llenadora" required></td></tr><td><input type="text" name="j_t_llenadora" required></td></tr>
                 </tbody>
             </table>
 
