@@ -21,7 +21,6 @@
         input, select { width: 95%; border: none; font-size: 11px; text-align: center; background: transparent; }
         input:focus, select:focus { outline: 1px solid #e60000; background: #fff8f8; }
 
-        /* Campos inválidos */
         input.invalido, select.invalido { outline: 2px solid #e60000; background: #fff0f0; }
 
         .btn-agregar {
@@ -46,7 +45,6 @@
         }
         .input-nuevo:focus { outline: 1px solid #e60000; background: #fff8f8; border: 1px solid #e60000; }
 
-        /* Columna de eliminar fila */
         .td-eliminar { border: none !important; background: transparent !important; width: 30px; padding: 0 2px; }
 
         .footer-firmas { display: flex; justify-content: space-around; margin-top: 40px; margin-bottom: 60px; flex-wrap: wrap; gap: 20px; }
@@ -54,7 +52,6 @@
         .btn-flotante { position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 100; font-size: 14px; }
         .btn-flotante:hover { background: #218838; }
 
-        /* Toast de validación */
         #toast {
             display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             background: #e60000; color: #fff; padding: 12px 28px; border-radius: 8px;
@@ -67,8 +64,6 @@
 
 <div id="toast">⚠️ Por favor complete todos los campos obligatorios.</div>
 
-<!-- Se elimina el <form> con action ya que el backend no está implementado;
-     el guardado se maneja por JS con validación previa -->
 <div class="hoja" id="formulario">
 
     <!-- ── CABECERA ── -->
@@ -89,7 +84,7 @@
     <table>
         <thead>
             <tr>
-                <th>Hora Inicial</th><th>Hora Final</th>
+                <th>Hora Inicial de Turno</th><th>Hora Final de Turno</th>
                 <th>Línea</th><th>Grupo</th><th>N°</th>
             </tr>
         </thead>
@@ -113,15 +108,19 @@
             <table>
                 <thead>
                     <tr>
+                        <th rowspan="2">N°</th>
                         <th colspan="2">Hora Producción</th>
                         <th rowspan="2">Sabor</th><th rowspan="2">Formato</th>
-                        <th rowspan="2">BPM</th><th rowspan="2">Paquetes</th>
-                        <th rowspan="2">Neta</th><th rowspan="2" style="border:none; background:transparent;"></th>
+                        <th rowspan="2">Velocidad BPM</th>
+                        <th rowspan="2">Cajas\Paquetes Recibidas</th>
+                        <th rowspan="2">Produccion Neta</th>
+                        <th rowspan="2" style="border:none; background:transparent;"></th>
                     </tr>
-                    <tr><th>Ini</th><th>Fin</th></tr>
+                    <tr><th>Inicial</th><th>Final</th></tr>
                 </thead>
                 <tbody id="tbodyProducto">
                     <tr>
+                        <td>1</td>
                         <td><input type="time" name="p_h_ini[]" required></td>
                         <td><input type="time" name="p_h_fin[]" required></td>
                         <td><input type="text" name="p_sabor[]" required></td>
@@ -141,16 +140,19 @@
             <table>
                 <thead>
                     <tr>
+                        <th rowspan="2">N°</th>
                         <th colspan="2">Rechazo Llenas</th>
-                        <th rowspan="2">P. Calidad</th><th rowspan="2">Total</th>
-                        <th rowspan="2">Lote</th>
-                        <th colspan="2">Codificados</th>
+                        <th rowspan="2">Pruebas Calidad</th>
+                        <th rowspan="2">Total Rechazo</th>
+                        <th rowspan="2">Lote Produccion</th>
+                        <th colspan="2">Envases Codificadas</th>
                         <th rowspan="2" style="border:none; background:transparent;"></th>
                     </tr>
-                    <tr><th>Llenad.</th><th>Línea</th><th>Ini</th><th>Fin</th></tr>
+                    <tr><th>Llenadora</th><th>Línea</th><th>Inicial</th><th>Final</th></tr>
                 </thead>
                 <tbody id="tbodyEnvases">
                     <tr>
+                        <td>1</td>
                         <td><input type="text"   name="env_r_llenadora[]" required></td>
                         <td><input type="text"   name="env_r_linea[]" required></td>
                         <td><input type="number" name="env_p_calidad[]" required></td>
@@ -170,15 +172,19 @@
             <table>
                 <thead>
                     <tr>
+                        <th rowspan="2">N°</th>
                         <th colspan="2">Roturas Llenas</th>
                         <th colspan="3">Roturas Vacías</th>
-                        <th rowspan="2">Dev. Exp.</th><th rowspan="2">Sucias</th>
+                       <th rowspan="2" style="width: 100px; min-width: 100px; max-width: 100px; white-space: normal; text-align: center; vertical-align: middle; line-height: 1.2; padding: 5px;">Devolucion de Botellas Vacias a Expedicion</th>
+                        <th rowspan="2" style="width: 100px; min-width: 100px; max-width: 100px; white-space: normal; text-align: center; vertical-align: middle; line-height: 1.2; padding: 5px;">Rechazo de botellas sucias y/o picadas</th>
+                        <th rowspan="2" style="width: 100px; min-width: 100px; max-width: 100px; white-space: normal; text-align: center; vertical-align: middle; line-height: 1.2; padding: 5px;">Roturas Total de Botellas en Produccion</th>
                         <th rowspan="2" style="border:none; background:transparent;"></th>
                     </tr>
-                    <tr><th>Llen.</th><th>Lin.</th><th>Lav.</th><th>Mesa</th><th>Lin.</th></tr>
+                    <tr><th>Llenadora</th><th>Linea</th><th>Lavadora</th><th>Mesa de Carga</th><th>Linea</th></tr>
                 </thead>
                 <tbody id="tbodyRoturas">
                     <tr>
+                        <td>1</td>
                         <td><input type="text"   name="rv_r_llenadora[]" required></td>
                         <td><input type="text"   name="rv_r_linea[]" required></td>
                         <td><input type="number" name="rv_v_lavadora[]" required></td>
@@ -186,6 +192,7 @@
                         <td><input type="text"   name="rv_v_linea[]" required></td>
                         <td><input type="text"   name="rv_dev_expedicion[]" required></td>
                         <td><input type="text"   name="rv_rech_sucias[]" required></td>
+                        <td><input type="text"   name="rotura_total[]" required></td>
                         <td class="td-eliminar"></td>
                     </tr>
                 </tbody>
@@ -230,11 +237,11 @@
                 </thead>
                 <tbody id="tbodyGas">
                     <tr>
-                        <td><input type="text"   name="g_tanque[]" value="Tanque 1" required></td>
-                        <td><input type="number" name="g_p_ini[]" required></td>
-                        <td><input type="number" name="g_p_fin[]" required></td>
-                        <td><input type="number" name="g_w_ini[]" required></td>
-                        <td><input type="number" name="g_w_fin[]" required></td>
+                        <td><input type="text"   name="g_tanque[]"  value="Tanque 1" required></td>
+                        <td><input type="number" name="g_p_ini[]"   required></td>
+                        <td><input type="number" name="g_p_fin[]"   required></td>
+                        <td><input type="number" name="g_w_ini[]"   required></td>
+                        <td><input type="number" name="g_w_fin[]"   required></td>
                         <td><input type="number" name="g_w_total[]" required></td>
                         <td class="td-eliminar"></td>
                     </tr>
@@ -339,16 +346,15 @@
 <button type="button" class="btn-flotante" onclick="guardarReporte()">GUARDAR REPORTE</button>
 
 <script>
-    /* ══════════════════════════════════════════
-       CONTADORES DE COLUMNAS DINÁMICAS
-    ══════════════════════════════════════════ */
     let nFallas = 1, nRutinarias = 1;
 
     /* ══════════════════════════════════════════
-       PLANTILLAS DE FILAS
+       PLANTILLAS DE FILAS — con numeración
     ══════════════════════════════════════════ */
     function filaProducto() {
+        const n = document.getElementById('tbodyProducto').rows.length + 1;
         return `<tr>
+            <td>${n}</td>
             <td><input type="time"   name="p_h_ini[]"   required></td>
             <td><input type="time"   name="p_h_fin[]"   required></td>
             <td><input type="text"   name="p_sabor[]"   required></td>
@@ -361,7 +367,9 @@
     }
 
     function filaEnvases() {
+        const n = document.getElementById('tbodyEnvases').rows.length + 1;
         return `<tr>
+            <td>${n}</td>
             <td><input type="text"   name="env_r_llenadora[]" required></td>
             <td><input type="text"   name="env_r_linea[]"     required></td>
             <td><input type="number" name="env_p_calidad[]"   required></td>
@@ -374,14 +382,17 @@
     }
 
     function filaRoturas() {
+        const n = document.getElementById('tbodyRoturas').rows.length + 1;
         return `<tr>
-            <td><input type="text"   name="rv_r_llenadora[]"  required></td>
-            <td><input type="text"   name="rv_r_linea[]"      required></td>
-            <td><input type="number" name="rv_v_lavadora[]"   required></td>
-            <td><input type="number" name="rv_v_mesa[]"       required></td>
-            <td><input type="text"   name="rv_v_linea[]"      required></td>
+            <td>${n}</td>
+            <td><input type="text"   name="rv_r_llenadora[]"    required></td>
+            <td><input type="text"   name="rv_r_linea[]"        required></td>
+            <td><input type="number" name="rv_v_lavadora[]"     required></td>
+            <td><input type="number" name="rv_v_mesa[]"         required></td>
+            <td><input type="text"   name="rv_v_linea[]"        required></td>
             <td><input type="text"   name="rv_dev_expedicion[]" required></td>
-            <td><input type="text"   name="rv_rech_sucias[]"  required></td>
+            <td><input type="text"   name="rv_rech_sucias[]"    required></td>
+            <td><input type="text"   name="rotura_total[]"      required></td>
             <td class="td-eliminar"></td>
         </tr>`;
     }
@@ -397,7 +408,6 @@
         const tbody = document.getElementById(tbodyId);
         if (tbody.rows.length > 1) {
             tbody.deleteRow(tbody.rows.length - 1);
-            // Re-numerar si aplica
             renumerar(tbodyId);
         }
     }
@@ -491,9 +501,9 @@
             tbody='tbodyRutinarias'; nameIni='r_ini[]'; nameFin='r_fin[]';
         }
 
-        const head1    = document.getElementById(h1);
+        const head1     = document.getElementById(h1);
         const btnHeader = document.getElementById(btn);
-        const nuevoTh  = document.createElement('th');
+        const nuevoTh   = document.createElement('th');
         nuevoTh.colSpan = 2;
         nuevoTh.innerText = 'Frecuencia ' + count;
         head1.insertBefore(nuevoTh, btnHeader);
@@ -502,7 +512,6 @@
 
         const filas = document.getElementById(tbody).rows;
         for (let i = 0; i < filas.length; i++) {
-            // Insertar antes de la última celda (td-eliminar)
             const lastTd = filas[i].lastElementChild;
             const fragIni = document.createElement('td');
             fragIni.innerHTML = `<input type="time" name="${nameIni}" required>`;
@@ -514,36 +523,30 @@
     }
 
     function quitarColumna(tipo) {
-        let h1, h2, tbody, count;
+        let h1, h2, tbody;
         if (tipo === 'Fallas') {
-            if (nFallas <= 1) return;          // mínimo 1 frecuencia
-            h1='headerFallas1'; h2='headerFallas2'; tbody='tbodyFallas'; count=nFallas; nFallas--;
+            if (nFallas <= 1) return;
+            h1='headerFallas1'; h2='headerFallas2'; tbody='tbodyFallas'; nFallas--;
         } else {
             if (nRutinarias <= 1) return;
-            h1='headerRutinarias1'; h2='headerRutinarias2'; tbody='tbodyRutinarias'; count=nRutinarias; nRutinarias--;
+            h1='headerRutinarias1'; h2='headerRutinarias2'; tbody='tbodyRutinarias'; nRutinarias--;
         }
 
-        // Quitar el <th colspan=2> de frecuencia N en header fila 1
         const head1 = document.getElementById(h1);
-        const ths = head1.querySelectorAll('th[colspan="2"]');
-        // El último th[colspan=2] que NO sea el botón es la última frecuencia
+        const ths   = head1.querySelectorAll('th[colspan="2"]');
         const ultimoFrec = Array.from(ths).filter(th => th.innerText.startsWith('Frecuencia')).pop();
         if (ultimoFrec) ultimoFrec.remove();
 
-        // Quitar los dos últimos <th> de la fila 2 (Inicio / Fin)
         const head2 = document.getElementById(h2);
-        const ths2 = head2.querySelectorAll('th');
+        const ths2  = head2.querySelectorAll('th');
         if (ths2.length >= 2) { ths2[ths2.length-1].remove(); ths2[ths2.length-2].remove(); }
 
-        // Quitar las dos últimas celdas de tiempo en cada fila del tbody (antes de td-eliminar)
         const filas = document.getElementById(tbody).rows;
         for (let i = 0; i < filas.length; i++) {
             const cells = filas[i].cells;
-            const last = cells[cells.length - 1]; // td-eliminar
-            // eliminar las 2 celdas justo antes de td-eliminar
             if (cells.length >= 3) {
                 filas[i].removeChild(cells[cells.length - 2]);
-                filas[i].removeChild(cells[cells.length - 2]); // índice se recorre
+                filas[i].removeChild(cells[cells.length - 2]);
             }
         }
     }
@@ -558,7 +561,7 @@
     };
 
     function actualizarOpciones(selectCat) {
-        const fila = selectCat.closest('tr');
+        const fila          = selectCat.closest('tr');
         const selectDetalle = fila.querySelector('select[name="r_detalle[]"]');
         const inputNuevo    = fila.querySelector('.input-nuevo');
         selectDetalle.style.display = 'block';
@@ -595,7 +598,6 @@
        VALIDACIÓN Y GUARDADO
     ══════════════════════════════════════════ */
     function guardarReporte() {
-        // Limpiar marcas previas
         document.querySelectorAll('.invalido').forEach(el => el.classList.remove('invalido'));
 
         const campos = document.querySelectorAll(
@@ -604,7 +606,6 @@
 
         let hayError = false;
         campos.forEach(campo => {
-            // Ignorar campos ocultos (input-nuevo no visible)
             if (campo.offsetParent === null) return;
             const val = campo.value.trim();
             if (!val) {
@@ -615,14 +616,11 @@
 
         if (hayError) {
             mostrarToast('⚠️ Por favor complete todos los campos obligatorios.');
-            // Hacer scroll al primer campo inválido
             const primero = document.querySelector('.invalido');
             if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
-        // ── Aquí iría el envío real al backend ──
-        // Ejemplo: fetch('/guardar_todo', { method:'POST', body: new FormData(...) })
         mostrarToast('✅ Reporte listo para enviar. Conecte el backend en guardarReporte().');
     }
 
@@ -634,7 +632,6 @@
         setTimeout(() => t.style.display = 'none', 4000);
     }
 
-    /* Limpiar marca roja al corregir el campo */
     document.addEventListener('input', e => {
         if (e.target.classList.contains('invalido') && e.target.value.trim())
             e.target.classList.remove('invalido');
